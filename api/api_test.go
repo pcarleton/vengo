@@ -12,26 +12,9 @@ func TestToUrl(t *testing.T) {
   }
 
   
-  expected := "amount=1.1&access_token=zz" 
-  if msg := UrlEncode(pmt); msg != expected {
+  expected := "access_token=zz&amount=1.1" 
+  if msg := StructToUrlValues(pmt).Encode(); msg != expected {
     t.Errorf("Got %v, expected %v", msg, expected)
   }
 }
 
-func TestSpacerize(t *testing.T) {
-  tests := []struct {
-    input string
-    expected string
-  }{
-    { "Normal", "normal"},
-    { "AccessToken", "access_token"},
-    { "UserID", "user_id"},
-  }
-
-  for _, test := range tests {
-    if got := Spacerize(test.input); got != test.expected {
-      t.Errorf("Expected %v, got: %v", test.expected, got)
-    }
-  }
-
-}

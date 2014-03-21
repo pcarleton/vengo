@@ -4,18 +4,22 @@ import (
   "fmt"
   "net/http"
   "net/url"
-  "bytes"
   "encoding/json"
   "io/ioutil"
-  "unicode"
+  "strings"
+  "reflect"
 )
 
 type Service struct {
   client *http.Client
+  baseUrl string
 }
 
 func New(client *http.Client) *Service {
-  return &Service{client}
+  return &Service{
+    client: client,
+    baseUrl: "https://api.venmo.com/v1/",
+  }
 }
 
 type Payment struct {
@@ -51,23 +55,12 @@ type PmtData struct {
   Status string `json:"status,omitempty"`
 }
 
-func (c *MakePaymentCall) Do() (interface{}, error) {
-  buf := new(bytes.Buffer)
-  //err := json.NewEncoder(buf).Encode(c.payment)
-  //if err != nil {
-  //  return nil, err
-  //}
-  buf.WriteString(otherBody)
-  fmt.Println(buf)
-  urls := "https://api.venmo.com/v1/payments"
-  params := make(url.Values)
-  params.Set("access_token", c.payment.AccessToken)
-  params.Set("phone", c.payment.Phone)
-  params.Set("amount", c.payment.Amount)
-  params.Set("note", c.payment.Note)
-  ctype := "application/x-www-form-urlencoded"
-  urls += "?" + params.Encode()
+func (c *MakePaymentCall) Do() (*PaymentResponse, error) {
+  params := StructToUrlValues(c.payment)
+  urls := c.s.baseUrl + "payments?" + params.Encode()
   req, _ := http.NewRequest("POST", urls, nil)
+
+  ctype := "application/x-www-form-urlencoded"
   req.Header.Set("Content-Type", ctype)
   res, err := c.s.client.Do(req)
   if err != nil {
@@ -84,28 +77,19 @@ func (c *MakePaymentCall) Do() (interface{}, error) {
   return ret, nil
 }
 
-func UrlEncode(p *Payment) string {
-  return ""
-}
-
-func Spacerize(s string) string {
-  buf := new(bytes.Buffer)
-
-  inARow := false
-  for i, char := range s {
-    lower := unicode.ToLower(char)
-    if lower != char && i != 0 {
-      if !inARow {
-        buf.WriteRune('_')
-      }
-      inARow = true
-    }  else {
-      inARow = false
+func StructToUrlValues(p *Payment) url.Values {
+  params := make(url.Values)
+  v := reflect.ValueOf(*p)
+  t := reflect.TypeOf(*p)
+  for i := 0; i < v.NumField(); i++ {
+    fieldValue := v.Field(i)
+    if (fieldValue.Len() != 0) {
+      // Get json name
+      urlName := strings.Split(t.Field(i).Tag.Get("json"), ",")[0]
+      params.Set(urlName, fieldValue.String())
     }
-
-    buf.WriteRune(lower)
   }
-  return buf.String()
+  return params
 }
 
 func CheckResponse(res *http.Response) error {
