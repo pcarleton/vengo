@@ -57,7 +57,6 @@ func (c *MakePaymentCall) Do() (interface{}, error) {
   //if err != nil {
   //  return nil, err
   //}
-  otherBody := `{"access_token":"EQcxUksCSBjPPxtjrHkgYBPuArZjF5JR","note":"testing!","amount":-1.00,"audience":"private"}`
   buf.WriteString(otherBody)
   fmt.Println(buf)
   urls := "https://api.venmo.com/v1/payments"
