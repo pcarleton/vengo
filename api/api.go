@@ -17,7 +17,7 @@ func New(client *http.Client) *Service {
   }
 }
 
-type Payment struct {
+type MakePaymentRequest struct {
   AccessToken string `json:"access_token,omitempty"`
   Phone string `json:"phone,omitempty"`
   Email string `json:"email,omitempty"`
@@ -35,10 +35,7 @@ type ListPaymentsRequest struct {
 }
 
 type ListPaymentsResponse struct {
-
-}
-func (s *Service) ListPayments(req *ListPaymentsRequest) ListPaymentsResponse {
-  return ListPaymentsResponse{}
+  Data []PmtData `json:"data,omitempty"`
 }
 
 type MakePaymentResponse struct {
@@ -52,18 +49,47 @@ type ResponseData struct {
 
 type PmtData struct {
   Status string `json:"status,omitempty"`
+  // target
+  DateCompleted string `json:"date_completed,omitempty"`
+  // actor
+  Actor User `json:"actor,omitempty"`
+  Note string `json:"note,omitempty"`
+  Amount float32 `json:"amount,omitempty"`
+  Action string `json:"action,omitempty"`
+  DateCreated string `json:"date_created,omitempty"`
+  ID string `json:"id,omitempty"`
 }
 
-func (s *Service) MakePayment(payment *Payment) (*MakePaymentResponse, error) {
-  ret := new(MakePaymentResponse)
-  if err := s.MakeRequest("payments", "POST", *payment, ret); err != nil {
+type User struct {
+  Username string `json:"username,omitempty"`
+  FirstName string `json:"first_name,omitempty"`
+  LastName string `json:"last_name,omitempty"`
+  DisplayName string `json:"display_name,omitempty"`
+  About string `json:"about,omitempty"`
+  ProfilePictureURL string `json:"profile_picture_url,omitempty"`
+  ID string `json:"id,omitempty"`
+  DateJoined string `json:"date_joined,omitempty"`
+}
+
+func (s *Service) ListPayments(req *ListPaymentsRequest) (*ListPaymentsResponse, error) {
+  ret := new(ListPaymentsResponse)
+  if err := s.makeRequest("payments", "GET", *req, ret); err != nil {
     return nil, err
-  } 
+  }
   return ret, nil
 }
 
 
-func (s *Service) MakeRequest(targetUrl, method string, req, response interface{}) error {
+func (s *Service) MakePayment(payment *MakePaymentRequest) (*MakePaymentResponse, error) {
+  ret := new(MakePaymentResponse)
+  if err := s.makeRequest("payments", "POST", *payment, ret); err != nil {
+    return nil, err
+  }
+  return ret, nil
+}
+
+
+func (s *Service) makeRequest(targetUrl, method string, req, response interface{}) error {
   params := StructToUrlValues(req)
   urls := s.baseUrl + targetUrl + "?" + params.Encode()
   request, _ := http.NewRequest(method, urls, nil)

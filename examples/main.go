@@ -25,15 +25,21 @@ func main() {
   client := t.Client()
   svc := api.New(client)
 
-  payment := &api.Payment{
-    AccessToken: flag.Arg(0),
-    Phone: flag.Arg(1),
-    Note: "testing!",
-    Amount: "-1.0",
-    Audience: "private",
-  }
+  //payment := &api.Payment{
+  //  AccessToken: flag.Arg(0),
+  //  Phone: flag.Arg(1),
+  //  Note: "testing!",
+  //  Amount: "-1.0",
+  //  Audience: "private",
+  //}
 
-  res, err := svc.MakePaymento(payment)
+  //res, err := svc.MakePaymento(payment)
+
+  listReq := &api.ListPaymentsRequest{
+    AccessToken: flag.Arg(0),
+    Limit: "5",
+  }
+  res, err := svc.ListPayments(listReq)
   if err != nil {
     fmt.Printf("Error making payment: %v\n", err)
     return
