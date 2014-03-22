@@ -35,7 +35,7 @@ type ListPaymentsRequest struct {
 }
 
 type ListPaymentsResponse struct {
-  Data []PmtData `json:"data,omitempty"`
+  Data []Payment `json:"data,omitempty"`
 }
 
 type MakePaymentResponse struct {
@@ -44,14 +44,13 @@ type MakePaymentResponse struct {
 
 type ResponseData struct {
   Balance string `json:"balance,omitempty"`
-  Pmt PmtData `json:"payment,omitempty"`
+  Pmt Payment `json:"payment,omitempty"`
 }
 
-type PmtData struct {
+type Payment struct {
   Status string `json:"status,omitempty"`
   // target
   DateCompleted string `json:"date_completed,omitempty"`
-  // actor
   Actor User `json:"actor,omitempty"`
   Note string `json:"note,omitempty"`
   Amount float32 `json:"amount,omitempty"`
