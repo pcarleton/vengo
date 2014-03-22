@@ -8,13 +8,21 @@ import (
 type Service struct {
   client *http.Client
   baseUrl string
+  tokenString string
 }
 
-func New(client *http.Client) *Service {
+func New(tokenString string) *Service {
   return &Service{
-    client: client,
+    client: ClientFromToken(tokenString),
     baseUrl: "https://api.venmo.com/v1/",
+    tokenString: tokenString,
   }
+}
+
+func NewTest(tokenString string) *Service {
+  svc := New(tokenString)
+  svc.baseUrl = "https://sandbox-api.venmo.com/v1/"
+  return svc
 }
 
 type MakePaymentRequest struct {
@@ -43,7 +51,7 @@ type MakePaymentResponse struct {
 }
 
 type ResponseData struct {
-  Balance string `json:"balance,omitempty"`
+  Balance float32 `json:"balance,omitempty"`
   Pmt Payment `json:"payment,omitempty"`
 }
 
@@ -51,7 +59,7 @@ type Payment struct {
   Status string `json:"status,omitempty"`
   Target PaymentTarget `json:"target,omitempty"`
   DateCompleted string `json:"date_completed,omitempty"`
-  Actor User `json:"actor,omitempty"`
+  Actor PaymentUser `json:"actor,omitempty"`
   Note string `json:"note,omitempty"`
   Amount float32 `json:"amount,omitempty"`
   Action string `json:"action,omitempty"`
@@ -79,6 +87,7 @@ type PaymentUser struct {
 
 func (s *Service) ListPayments(req *ListPaymentsRequest) (*ListPaymentsResponse, error) {
   ret := new(ListPaymentsResponse)
+  req.AccessToken = s.tokenString
   if err := s.makeRequest("payments", "GET", *req, ret); err != nil {
     return nil, err
   }
@@ -88,6 +97,7 @@ func (s *Service) ListPayments(req *ListPaymentsRequest) (*ListPaymentsResponse,
 
 func (s *Service) MakePayment(payment *MakePaymentRequest) (*MakePaymentResponse, error) {
   ret := new(MakePaymentResponse)
+  payment.AccessToken = s.tokenString
   if err := s.makeRequest("payments", "POST", *payment, ret); err != nil {
     return nil, err
   }

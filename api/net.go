@@ -3,12 +3,24 @@ package api
 import (
   "fmt"
   "net/url"
-  "io/ioutil"
   "net/http"
+  "io/ioutil"
   "encoding/json"
   "strings"
   "reflect"
+  "code.google.com/p/goauth2/oauth"
 )
+
+func ClientFromToken(tokenString string) *http.Client {
+  token := &oauth.Token{
+    AccessToken: tokenString,
+  }
+  t := &oauth.Transport{
+                Token:     token,
+                Transport: http.DefaultTransport,
+  }
+  return t.Client()
+}
 
 func StructToUrlValues(input interface{}) url.Values {
   params := make(url.Values)
