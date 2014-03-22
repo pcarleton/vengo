@@ -1,8 +1,9 @@
 package api
 
 import (
-  "net/http"
   "encoding/json"
+  "fmt"
+  "net/http"
 )
 
 type Service struct {
@@ -100,6 +101,18 @@ type MeResponseData struct {
   User PaymentUser `json:"user,omitempty"`
 }
 
+type ListFriendsRequest struct {
+  AccessToken string `json:"access_token,omitempty"`
+  Before string `json:"before,omitempty"`
+  After string `json:"after,omitempty"`
+  Limit string `json:"limit,omitempty"`
+}
+
+type ListFriendsResponse struct {
+  // Pagination
+  Data []PaymentUser
+}
+
 func (s *Service) ListPayments(req *ListPaymentsRequest) (*ListPaymentsResponse, error) {
   ret := new(ListPaymentsResponse)
   req.AccessToken = s.tokenString
@@ -127,6 +140,15 @@ func (s *Service) MakePayment(payment *MakePaymentRequest) (*MakePaymentResponse
   return ret, nil
 }
 
+func (s *Service) ListFriends(userID string, req *ListFriendsRequest) (*ListFriendsResponse, error) {
+  req.AccessToken = s.tokenString
+  ret := new(ListFriendsResponse)
+  target := fmt.Sprintf("users/%s/friends", userID)
+  if err := s.makeRequest(target, "GET", *req, ret); err != nil {
+    return nil, err
+  }
+  return ret, nil
+}
 
 func (s *Service) makeRequest(targetUrl, method string, req, response interface{}) error {
   params := StructToUrlValues(req)

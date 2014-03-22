@@ -11,6 +11,7 @@ func init() {
   registerDemo("list", listDemo)
   registerDemo("pay", makePaymentDemo)
   registerDemo("me", meDemo)
+  registerDemo("friends", friendsDemo)
 }
 
 func usage() {
@@ -72,6 +73,20 @@ func meDemo(svc *api.Service, argv []string) {
   res, err := svc.Me()
   if err != nil {
     fmt.Printf("Error getting me info: %v\n", err)
+    return
+  }
+  fmt.Printf("Sucess! Got response: %+v\n", res)
+}
+
+func friendsDemo(svc *api.Service, argv []string) {
+  meInfo, err := svc.Me()
+  if err != nil {
+    fmt.Printf("Error getting me info: %v\n", err)
+    return
+  }
+  res, err := svc.ListFriends(meInfo.Data.User.ID, &api.ListFriendsRequest{})
+  if err != nil {
+    fmt.Printf("Error getting friends info: %v\n", err)
     return
   }
   fmt.Printf("Sucess! Got response: %+v\n", res)
