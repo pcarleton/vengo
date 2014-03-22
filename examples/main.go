@@ -37,7 +37,7 @@ func main() {
 
   listReq := &api.ListPaymentsRequest{
     AccessToken: flag.Arg(0),
-    Limit: "5",
+    Limit: "1",
   }
   res, err := svc.ListPayments(listReq)
   if err != nil {

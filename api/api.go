@@ -49,7 +49,7 @@ type ResponseData struct {
 
 type Payment struct {
   Status string `json:"status,omitempty"`
-  // target
+  Target PaymentTarget `json:"target,omitempty"`
   DateCompleted string `json:"date_completed,omitempty"`
   Actor User `json:"actor,omitempty"`
   Note string `json:"note,omitempty"`
@@ -59,7 +59,14 @@ type Payment struct {
   ID string `json:"id,omitempty"`
 }
 
-type User struct {
+type PaymentTarget struct {
+  Phone string `json:"phone,omitempty"`
+  Type string `json:"type,omitempty"`
+  Email string `json:"email,omitempty"`
+  User PaymentUser `json:"user,omitempty"`
+}
+
+type PaymentUser struct {
   Username string `json:"username,omitempty"`
   FirstName string `json:"first_name,omitempty"`
   LastName string `json:"last_name,omitempty"`
