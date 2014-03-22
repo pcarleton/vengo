@@ -15,7 +15,6 @@ func main() {
     return
   }
 
-
   token := &oauth.Token{
     AccessToken: flag.Arg(0),
   }
@@ -23,8 +22,6 @@ func main() {
                 Token:     token,
                 Transport: http.DefaultTransport,
   }
-
-  //client := &http.Client{}
   client := t.Client()
   svc := api.New(client)
 
@@ -36,7 +33,7 @@ func main() {
     Audience: "private",
   }
 
-  res, err := svc.MakePayment(payment).Do()
+  res, err := svc.MakePaymento(payment)
   if err != nil {
     fmt.Printf("Error making payment: %v\n", err)
     return

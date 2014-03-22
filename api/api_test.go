@@ -6,7 +6,7 @@ import (
 
 func TestToUrl(t *testing.T) {
 
-  pmt := &Payment{
+  pmt := Payment{
     Amount: "1.1",
     AccessToken: "zz",
   }
