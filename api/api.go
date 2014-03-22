@@ -53,7 +53,6 @@ type MakePaymentResponse struct {
 type ResponseData struct {
   Balance float32 `json:"balance,omitempty"`
   Pmt Payment `json:"payment,omitempty"`
-  User PaymentUser `json:"user,omitempty"`
 }
 
 type Payment struct {
@@ -84,6 +83,8 @@ type PaymentUser struct {
   ProfilePictureURL string `json:"profile_picture_url,omitempty"`
   ID string `json:"id,omitempty"`
   DateJoined string `json:"date_joined,omitempty"`
+  FriendsCount int `json:"friends_count,omitempty"`
+  IsFriend bool `json:"is_friend,omitempty"`
 }
 
 type MeRequest struct {
@@ -91,7 +92,12 @@ type MeRequest struct {
 }
 
 type MeResponse struct {
-  Data ResponseData `json:"data,omitempty"`
+  Data MeResponseData `json:"data,omitempty"`
+}
+
+type MeResponseData struct {
+  Balance string `json:"balance,omitempty"` // This one is returned as a string..
+  User PaymentUser `json:"user,omitempty"`
 }
 
 func (s *Service) ListPayments(req *ListPaymentsRequest) (*ListPaymentsResponse, error) {

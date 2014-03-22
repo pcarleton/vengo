@@ -10,6 +10,7 @@ import (
 func init() {
   registerDemo("list", listDemo)
   registerDemo("pay", makePaymentDemo)
+  registerDemo("me", meDemo)
 }
 
 func usage() {
@@ -62,6 +63,15 @@ func listDemo(svc *api.Service, argv []string) {
   res, err := svc.ListPayments(listReq)
   if err != nil {
     fmt.Printf("Error listing payments: %v\n", err)
+    return
+  }
+  fmt.Printf("Sucess! Got response: %+v\n", res)
+}
+
+func meDemo(svc *api.Service, argv []string) {
+  res, err := svc.Me()
+  if err != nil {
+    fmt.Printf("Error getting me info: %v\n", err)
     return
   }
   fmt.Printf("Sucess! Got response: %+v\n", res)
