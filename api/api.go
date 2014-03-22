@@ -53,6 +53,7 @@ type MakePaymentResponse struct {
 type ResponseData struct {
   Balance float32 `json:"balance,omitempty"`
   Pmt Payment `json:"payment,omitempty"`
+  User PaymentUser `json:"user,omitempty"`
 }
 
 type Payment struct {
@@ -85,6 +86,14 @@ type PaymentUser struct {
   DateJoined string `json:"date_joined,omitempty"`
 }
 
+type MeRequest struct {
+  AccessToken string `json:"access_token,omitempty"`
+}
+
+type MeResponse struct {
+  Data ResponseData `json:"data,omitempty"`
+}
+
 func (s *Service) ListPayments(req *ListPaymentsRequest) (*ListPaymentsResponse, error) {
   ret := new(ListPaymentsResponse)
   req.AccessToken = s.tokenString
@@ -94,6 +103,14 @@ func (s *Service) ListPayments(req *ListPaymentsRequest) (*ListPaymentsResponse,
   return ret, nil
 }
 
+func (s *Service) Me() (*MeResponse, error) {
+  req := &MeRequest{AccessToken: s.tokenString}
+  ret := new(MeResponse)
+  if err := s.makeRequest("me", "GET", *req, ret); err != nil {
+    return nil, err
+  }
+  return ret, nil
+}
 
 func (s *Service) MakePayment(payment *MakePaymentRequest) (*MakePaymentResponse, error) {
   ret := new(MakePaymentResponse)
